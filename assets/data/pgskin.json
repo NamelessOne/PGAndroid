@@ -1,0 +1,28 @@
+{
+com.badlogic.gdx.graphics.g2d.BitmapFont: {
+                                            arial25-font: { file: arial25.fnt },
+                                            arialbold25-font: { file: arialbold25.fnt },
+                                            tahomabold25-font: { file: tahomabold25.fnt }
+                                          },
+com.badlogic.gdx.graphics.Color: {
+	green: { a: 1, b: 0, g: 1, r: 0 },
+	white: { a: 1, b: 1, g: 1, r: 1 },
+	red: { a: 1, b: 0, g: 0, r: 1 },
+	black: { a: 1, b: 0, g: 0, r: 0 }
+},
+com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
+	default: { down: redbutton, up: redbutton },
+	toggle: { down: redbutton, checked: redbutton, up: redbutton }
+},
+com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
+	default: { down: redbuttonactive, up: redbutton, font: tahomabold25-font, fontColor: white },
+	toggle: { down: redbutton, up: redbutton, checked: redbutton, font: tahomabold25-font, fontColor: white, downFontColor: red }
+},
+com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
+	default: { font: arial25-font, fontColor: white },
+	header: { font: arialbold25-font, fontColor: white, background: header }
+},
+com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
+	default: { selection: textfield, background: textfield, font: arial25-font, fontColor: black, cursor: cursor }
+}
+}
