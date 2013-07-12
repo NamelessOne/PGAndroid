@@ -1,6 +1,7 @@
 package ru.sigil.libgdxexperimentalproject;
 
 import android.os.Handler;
+import android.os.Looper;
 
 import com.badlogic.gdx.Game;
 
@@ -22,6 +23,7 @@ public class MyGame extends Game {
 
     @Override
     public void create() {
+        Looper.prepare();
         mainMenuScreen = new MainMenuScreen(this);
         canvasScreen = new CanvasScreen(this);
         loginScreen = new LoginScreen(this);

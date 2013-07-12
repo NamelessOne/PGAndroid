@@ -15,6 +15,7 @@ import com.google.ads.AdSize;
 import com.google.ads.AdView;
 
 import ru.sigil.libgdxexperimentalproject.bd.BDCreator;
+import ru.sigil.libgdxexperimentalproject.bd.WordsBDAdapter;
 
 public class MainActivity extends AndroidApplication {
 
@@ -49,6 +50,7 @@ public class MainActivity extends AndroidApplication {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         BDCreator.copyFileFromAssets(getBaseContext());
+        WordsBDAdapter.getInstance().setContext(getBaseContext());
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
         config.useAccelerometer = false;
         config.useCompass = false;

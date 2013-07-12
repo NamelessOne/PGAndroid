@@ -1,5 +1,7 @@
 package ru.sigil.libgdxexperimentalproject.userinterface;
 
+import android.util.Log;
+
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
@@ -18,7 +20,9 @@ import org.apache.http.util.EntityUtils;
 import java.net.URLEncoder;
 
 import ru.sigil.libgdxexperimentalproject.MyGame;
+import ru.sigil.libgdxexperimentalproject.bd.WordsBDAdapter;
 import ru.sigil.libgdxexperimentalproject.model.Player;
+import ru.sigil.libgdxexperimentalproject.networking.NetworkController;
 
 public class LoginHUD extends HUD {
     Dialog difficultyDialog;
@@ -39,11 +43,16 @@ public class LoginHUD extends HUD {
                 //TODO написать все проверки
                 //setCanvasScreen();
                 int id = HTTPGet();
-                if (id > 0) {
+                if (id > 0) {  //Залогинились успешно.
                     Player.init(loginTextField.getText(), passwordTextField.getText(), id);
                     //TODO коннектимся к серверу, получаем роль и выбираем сложность.
                     //TODO Пока реализуем диалог с выбором сложности
-                    showChooseDifficultyDialog();
+                    showWaitingWindow("Подождите");
+                    //TODO Запускаем NetworkController.(Подумать как). Логинимся.
+                    NetworkController networkController = new NetworkController(getWaitingDialog());
+                    networkController.start();
+                    Log.v("222222", "fsfsa");
+                    //showChooseDifficultyDialog();
                 } else {
                     //TODO сообщение о том, что неправильная пара логин/пароль
                 }
@@ -104,6 +113,7 @@ public class LoginHUD extends HUD {
         TextButton hardButton = new TextButton("Сложно", getPGSkin());
         hardButton.addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                WordsBDAdapter.getInstance().getWord(NetworkController.DIFFICULTY_EASY);
                 setCanvasScreen();
                 return true;
             }
@@ -111,6 +121,7 @@ public class LoginHUD extends HUD {
         TextButton mediumButton = new TextButton("Средне", getPGSkin());
         mediumButton.addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                WordsBDAdapter.getInstance().getWord(NetworkController.DIFFICULTY_MEDIUM);
                 setCanvasScreen();
                 return true;
             }
@@ -118,6 +129,7 @@ public class LoginHUD extends HUD {
         TextButton easyButton = new TextButton("Легко", getPGSkin());
         easyButton.addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                WordsBDAdapter.getInstance().getWord(NetworkController.DIFFICULTY_HARD);
                 setCanvasScreen();
                 return true;
             }

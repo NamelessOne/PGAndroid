@@ -2,6 +2,10 @@ package ru.sigil.libgdxexperimentalproject.networking;
 
 import android.util.Log;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -9,6 +13,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import ru.sigil.libgdxexperimentalproject.model.Player;
+import ru.sigil.libgdxexperimentalproject.userinterface.HUD;
 
 //Тут будет поток, который обменивается данными с сервером
 public class NetworkController extends Thread {
@@ -20,6 +25,9 @@ public class NetworkController extends Thread {
     private DataInputStream din;
     private MessageWriter mw = new MessageWriter();
     private MessageReader mr = new MessageReader();
+    public static final int DIFFICULTY_EASY = 1;
+    public static int DIFFICULTY_MEDIUM = 2;
+    public static int DIFFICULTY_HARD = 3;
     public static final byte PAINTER = 0;
     public static final byte ANSWERER = 1;
     private static final byte MESSAGE_SEND_PLAYER_CONNECTED = 0;
@@ -27,13 +35,17 @@ public class NetworkController extends Thread {
     private static final byte MESSAGE_GET_PLAYERS_ROLE = 9;
     private static final byte MESSAGE_GET_OPPONENTS_NICKNAME = 10;
     private static final byte MESSAGE_GET_PICTURE = 3;
+    private Dialog waitingDialog;
+    private Label waitingLabel = new Label("", HUD.getPgSkin());
 
-    public NetworkController() {
-
+    public NetworkController(Dialog dialog) {
+        this.waitingDialog = dialog;
     }
 
     @Override
     public void run() {
+        waitingDialog.text(waitingLabel);
+        connectAfterLogin();
         //Code
     }
 
@@ -45,7 +57,7 @@ public class NetworkController extends Thread {
         this.playerRole = playerRole;
     }
 
-    public void onConnectButtonClick() { //Сначала коннектимся к серверу
+    public void connectAfterLogin() { //Сначала коннектимся к серверу
         try {
             socket = new Socket("10.0.2.2", 1955);
             socket.setKeepAlive(true);
@@ -58,6 +70,8 @@ public class NetworkController extends Thread {
             mw.writeByte((byte) 0);//ContinueMatch (Что это?!) вроде boolean
             dout.writeInt(mw.data.length);
             dout.write(mw.data);
+            //Login succesfull
+            setWaitingDialogText("Ищем оппонента...");
             mr = new MessageReader();
             prepareToReceive();
         } catch (UnknownHostException e) {
@@ -70,12 +84,14 @@ public class NetworkController extends Thread {
     private void getRole() {//Получаем роль
         playerRole = mr.readByte(din);
         Log.v("Role", String.valueOf(playerRole));
+        setWaitingDialogText("Роль" + String.valueOf(playerRole));
         prepareToReceive();
     }
 
     private void getOpponentLogin() { //Получаем логин оппонента
         opponentLogin = mr.readString(din);
         Log.v("Opponent login", opponentLogin);
+        setWaitingDialogText("Оппонент" + String.valueOf(opponentLogin));
         prepareToReceive();
     }
 
@@ -85,6 +101,7 @@ public class NetworkController extends Thread {
             getRole();
         }
         if (messageId == MESSAGE_GET_OPPONENTS_NICKNAME) {
+            Log.v("getLogin", "getLogin");
             getOpponentLogin();//TODO
         }
         if (messageId == MESSAGE_GET_PICTURE) {
@@ -115,5 +132,18 @@ public class NetworkController extends Thread {
         //TODO
         Log.v("Not in match", String.valueOf(MESSAGE_GET_PLAYER_NOT_IN_MATCH));
         prepareToReceive();
+    }
+
+    private void setWaitingDialogText(String text)
+    {
+        final String newText = new String(text);
+        Gdx.app.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                waitingLabel.setText(newText);
+                //waitingDialog.text(waitingLabel);
+            }
+        });
+
     }
 }

@@ -18,7 +18,7 @@ import ru.sigil.libgdxexperimentalproject.model.PaintBrush;
 import ru.sigil.libgdxexperimentalproject.networking.NetworkController;
 
 public class CanvasHUD extends HUD {
-    private NetworkController networkController = new NetworkController();
+    //private NetworkController networkController = new NetworkController();
 
     public CanvasHUD() {
         Slider slider = new Slider(2, 42, 2, false, getSkin());
@@ -43,7 +43,7 @@ public class CanvasHUD extends HUD {
         TextButton testButton = new TextButton("Test", getSkin());
         testButton.addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                networkController.onConnectButtonClick();
+                //networkController.connectAfterLogin();
                 return true;
             }
         });

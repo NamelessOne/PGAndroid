@@ -1,5 +1,7 @@
 package ru.sigil.libgdxexperimentalproject.networking;
 
+import android.util.Log;
+
 import java.io.DataInputStream;
 
 public class MessageReader {
@@ -29,15 +31,16 @@ public class MessageReader {
     }
 
     public String readString(DataInputStream dis) {
-        StringBuilder sb = new StringBuilder();
         String s = "";
         try {
             int strLength = readInt(dis);
+            Log.v("rstringlength", String.valueOf(strLength));
             offset += strLength;
+            byte[] b = new byte[strLength];
             for (int i = 0; i < strLength; i++) {
-                sb.append(dis.readChar());
+                dis.read(b);
             }
-            s = sb.toString();
+            s = new String(b);
         } catch (Exception e) {
             e.printStackTrace();
         }
