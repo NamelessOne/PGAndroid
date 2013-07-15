@@ -10,14 +10,12 @@ import ru.sigil.libgdxexperimentalproject.MyGame;
 
 public class MainMenuHUD extends HUD {
 
-    private MyGame myGame;
-
     public MainMenuHUD(MyGame myGame) {
-        this.myGame = myGame;
+        setMyGame(myGame);
         TextButton newGameButton = new TextButton("Новая игра", getPGSkin());
         newGameButton.addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                setCanvasScreen();
+                setLoginScreen();
                 return true;
             }
         });
@@ -37,9 +35,5 @@ public class MainMenuHUD extends HUD {
         table.add(achievementsButton).width(getStage().getWidth() * 11 / 12).height(getStage().getHeight() / 12).fill();
         getStage().addActor(table);
         setHeader("GAME");
-    }
-
-    private void setCanvasScreen() {
-        myGame.setLoginScreen();
     }
 }

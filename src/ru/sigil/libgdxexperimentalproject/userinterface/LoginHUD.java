@@ -20,19 +20,16 @@ import org.apache.http.util.EntityUtils;
 import java.net.URLEncoder;
 
 import ru.sigil.libgdxexperimentalproject.MyGame;
-import ru.sigil.libgdxexperimentalproject.bd.WordsBDAdapter;
 import ru.sigil.libgdxexperimentalproject.model.Player;
 import ru.sigil.libgdxexperimentalproject.networking.NetworkController;
 
 public class LoginHUD extends HUD {
-    Dialog difficultyDialog;
-    private MyGame myGame;
     private TextField loginTextField;
     private TextField passwordTextField;
 
 
     public LoginHUD(MyGame myGame) {
-        this.myGame = myGame;
+        this.setMyGame(myGame);
         Label loginLabel = new Label("Логин", getPGSkin());
         Label passwordLabel = new Label("Пароль", getPGSkin());
         loginTextField = new TextField("", getPGSkin());
@@ -49,10 +46,9 @@ public class LoginHUD extends HUD {
                     //TODO Пока реализуем диалог с выбором сложности
                     showWaitingWindow("Подождите");
                     //TODO Запускаем NetworkController.(Подумать как). Логинимся.
-                    NetworkController networkController = new NetworkController(getWaitingDialog());
+                    NetworkController networkController = new NetworkController(getWaitingDialog(), get());
                     networkController.start();
                     Log.v("222222", "fsfsa");
-                    //showChooseDifficultyDialog();
                 } else {
                     //TODO сообщение о том, что неправильная пара логин/пароль
                 }
@@ -84,14 +80,6 @@ public class LoginHUD extends HUD {
         setHeader("Войти");
     }
 
-    private void setCanvasScreen() {
-        myGame.setCanvasScreen();
-    }
-
-    private void setRegistrationScreen() {
-        myGame.setRegistrationScreen();
-    }
-
     private int HTTPGet() {
         int id = 0;
         HttpClient httpclient = new DefaultHttpClient();
@@ -108,42 +96,8 @@ public class LoginHUD extends HUD {
         return id;
     }
 
-    private void showChooseDifficultyDialog() //Диалог выбора сложности
+    private HUD get()
     {
-        TextButton hardButton = new TextButton("Сложно", getPGSkin());
-        hardButton.addListener(new InputListener() {
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                WordsBDAdapter.getInstance().getWord(NetworkController.DIFFICULTY_EASY);
-                setCanvasScreen();
-                return true;
-            }
-        });
-        TextButton mediumButton = new TextButton("Средне", getPGSkin());
-        mediumButton.addListener(new InputListener() {
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                WordsBDAdapter.getInstance().getWord(NetworkController.DIFFICULTY_MEDIUM);
-                setCanvasScreen();
-                return true;
-            }
-        });
-        TextButton easyButton = new TextButton("Легко", getPGSkin());
-        easyButton.addListener(new InputListener() {
-            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                WordsBDAdapter.getInstance().getWord(NetworkController.DIFFICULTY_HARD);
-                setCanvasScreen();
-                return true;
-            }
-        });
-        difficultyDialog = new Dialog("Выберите сложность", getSkin());
-        difficultyDialog.align(Align.center);
-        difficultyDialog.setHeight(getStage().getHeight() / 2);
-        difficultyDialog.setWidth(getStage().getWidth() / 2);
-        difficultyDialog.row().fill().expandX();
-        difficultyDialog.add(hardButton);
-        difficultyDialog.row().fill().expandX();
-        difficultyDialog.add(mediumButton);
-        difficultyDialog.row().fill().expandX();
-        difficultyDialog.add(easyButton);
-        getStage().addActor(difficultyDialog);
+        return this;
     }
 }

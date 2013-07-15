@@ -37,9 +37,7 @@ public class MessageReader {
             Log.v("rstringlength", String.valueOf(strLength));
             offset += strLength;
             byte[] b = new byte[strLength];
-            for (int i = 0; i < strLength; i++) {
-                dis.read(b);
-            }
+            dis.read(b);
             s = new String(b);
         } catch (Exception e) {
             e.printStackTrace();

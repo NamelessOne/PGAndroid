@@ -37,8 +37,10 @@ public class NetworkController extends Thread {
     private static final byte MESSAGE_GET_PICTURE = 3;
     private Dialog waitingDialog;
     private Label waitingLabel = new Label("", HUD.getPgSkin());
+    private HUD currentHud;
 
-    public NetworkController(Dialog dialog) {
+    public NetworkController(Dialog dialog, HUD hud) {
+        this.currentHud = hud;
         this.waitingDialog = dialog;
     }
 
@@ -84,14 +86,21 @@ public class NetworkController extends Thread {
     private void getRole() {//Получаем роль
         playerRole = mr.readByte(din);
         Log.v("Role", String.valueOf(playerRole));
-        setWaitingDialogText("Роль" + String.valueOf(playerRole));
+        if(playerRole==ANSWERER)
+        {
+            setWaitingDialogText("Оппонент рисует. Ждем...");
+        }
+        else
+        {
+            currentHud.showDifficultyDialog();
+        }
         prepareToReceive();
     }
 
     private void getOpponentLogin() { //Получаем логин оппонента
         opponentLogin = mr.readString(din);
         Log.v("Opponent login", opponentLogin);
-        setWaitingDialogText("Оппонент" + String.valueOf(opponentLogin));
+        //setWaitingDialogText("Оппонент" + String.valueOf(opponentLogin));
         prepareToReceive();
     }
 

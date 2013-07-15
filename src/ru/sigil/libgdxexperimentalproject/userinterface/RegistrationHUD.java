@@ -20,15 +20,13 @@ import ru.sigil.libgdxexperimentalproject.MyGame;
 
 public class RegistrationHUD extends HUD {
 
-    private MyGame myGame;
-
     private TextField emailTextField;
     private TextField loginTextField;
     private TextField passwordTextField;
     private TextField confirmPasswordTextField;
 
     public RegistrationHUD(MyGame myGame) {
-        this.myGame = myGame;
+        setMyGame(myGame);
         Label emailLabel = new Label("E-mail", getPGSkin());
         Label loginLabel = new Label("Логин", getPGSkin());
         Label passwordLabel = new Label("Пароль", getPGSkin());
@@ -75,14 +73,6 @@ public class RegistrationHUD extends HUD {
         table.add(doneButton).width(getStage().getWidth() * 11 / 12).height(getStage().getHeight() / 12).fill().padBottom(10);
         getStage().addActor(table);
         setHeader("Регистрация");
-    }
-
-    private void setCanvasScreen() {
-        myGame.setCanvasScreen();
-    }
-
-    private void setLoginScreen() {
-        myGame.setLoginScreen();
     }
 
     private void HTTPPost() {
