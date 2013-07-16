@@ -98,9 +98,4 @@ public class CanvasRenderer extends Renderer {
                 rectangle.getDiameter());
         shapeRenderer.end();
     }
-
-    private void sendPicture() {
-        //TODO хватаем изображение и отсылаем на сервер
-        byte[] b = ScreenUtils.getFrameBufferPixels(false);
-    }
 }

@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -21,7 +20,6 @@ import java.net.URLEncoder;
 
 import ru.sigil.libgdxexperimentalproject.MyGame;
 import ru.sigil.libgdxexperimentalproject.model.Player;
-import ru.sigil.libgdxexperimentalproject.networking.NetworkController;
 
 public class LoginHUD extends HUD {
     private TextField loginTextField;
@@ -44,10 +42,7 @@ public class LoginHUD extends HUD {
                     Player.init(loginTextField.getText(), passwordTextField.getText(), id);
                     //TODO коннектимся к серверу, получаем роль и выбираем сложность.
                     //TODO Пока реализуем диалог с выбором сложности
-                    showWaitingWindow("Подождите");
-                    //TODO Запускаем NetworkController.(Подумать как). Логинимся.
-                    NetworkController networkController = new NetworkController(getWaitingDialog(), get());
-                    networkController.start();
+                    setMainMenuScreen();
                     Log.v("222222", "fsfsa");
                 } else {
                     //TODO сообщение о том, что неправильная пара логин/пароль
@@ -94,10 +89,5 @@ public class LoginHUD extends HUD {
             e.printStackTrace();
         }
         return id;
-    }
-
-    private HUD get()
-    {
-        return this;
     }
 }

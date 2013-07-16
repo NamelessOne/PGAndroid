@@ -9,20 +9,23 @@ import com.badlogic.gdx.graphics.GL20;
 import ru.sigil.libgdxexperimentalproject.MyGame;
 import ru.sigil.libgdxexperimentalproject.controller.CanvasController;
 import ru.sigil.libgdxexperimentalproject.model.MyCanvas;
+import ru.sigil.libgdxexperimentalproject.networking.NetworkController;
 import ru.sigil.libgdxexperimentalproject.userinterface.CanvasHUD;
 import ru.sigil.libgdxexperimentalproject.view.CanvasRenderer;
 
 public class CanvasScreen implements Screen, InputProcessor {
     private CanvasRenderer renderer;
     private CanvasController controller;
+    private NetworkController networkController;
 
-    public CanvasScreen(MyGame myGame) {
+    public CanvasScreen(MyGame myGame, NetworkController networkController) {
+        this.networkController = networkController;
         Gdx.app.log("MyLibGDXGame", "Game.create()");
     }
 
     @Override
     public void show() {
-        CanvasHUD canvasHUD = new CanvasHUD();
+        CanvasHUD canvasHUD = new CanvasHUD(networkController);
         MyCanvas myCanvas = new MyCanvas();
         renderer = new CanvasRenderer(myCanvas, canvasHUD);
         controller = new CanvasController(myCanvas, canvasHUD);

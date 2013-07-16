@@ -15,15 +15,16 @@ public class WordsBDAdapter {
     public String getWord(int difficulty) {
         //TODO выбираем слово заданной сложности
         String res = "";
-        String textFilter = "DIFFICULTY = " + String.valueOf(difficulty)
-                + " ORDER BY RANDOM() LIMIT 1";
+        String textFilter = " DIFFICULTY = " + String.valueOf(difficulty)
+                + " ORDER BY RANDOM() LIMIT 1 ";
         SQLiteDatabase mDatabase = getContext().openOrCreateDatabase("WordsDB",
                 0, null);
         try {
             Cursor managedCursor = mDatabase.query("words", null, textFilter,
                     null, null, null, null);
-            res = managedCursor.getString(managedCursor
-                    .getColumnIndex("word"));
+            if(managedCursor.moveToFirst()){
+            res = managedCursor.getString(managedCursor.getColumnIndex("word"));
+            }
             managedCursor.close();
         } catch (Exception e) {
             e.printStackTrace();

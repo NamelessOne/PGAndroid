@@ -5,6 +5,7 @@ import android.os.Looper;
 
 import com.badlogic.gdx.Game;
 
+import ru.sigil.libgdxexperimentalproject.networking.NetworkController;
 import ru.sigil.libgdxexperimentalproject.screens.CanvasScreen;
 import ru.sigil.libgdxexperimentalproject.screens.LoginScreen;
 import ru.sigil.libgdxexperimentalproject.screens.MainMenuScreen;
@@ -25,7 +26,6 @@ public class MyGame extends Game {
     public void create() {
         Looper.prepare();
         mainMenuScreen = new MainMenuScreen(this);
-        canvasScreen = new CanvasScreen(this);
         loginScreen = new LoginScreen(this);
         registrationScreen = new RegistrationScreen(this);
         setScreen(mainMenuScreen);
@@ -35,7 +35,8 @@ public class MyGame extends Game {
     public void resize(int width, int height) {
     }
 
-    public void setCanvasScreen() {
+    public void setCanvasScreen(NetworkController networkController) {
+        canvasScreen = new CanvasScreen(this, networkController);
         getShowAdsHandler().sendEmptyMessage(HIDE_ADS);
         setScreen(canvasScreen);
     }
@@ -48,6 +49,11 @@ public class MyGame extends Game {
     public void setRegistrationScreen() {
         getShowAdsHandler().sendEmptyMessage(SHOW_ADS);
         setScreen(registrationScreen);
+    }
+
+    public void setMainMenuScreen() {
+        getShowAdsHandler().sendEmptyMessage(SHOW_ADS);
+        setScreen(mainMenuScreen);
     }
 
     public Handler getShowAdsHandler() {

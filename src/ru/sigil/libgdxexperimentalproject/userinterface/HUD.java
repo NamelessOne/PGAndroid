@@ -1,5 +1,7 @@
 package ru.sigil.libgdxexperimentalproject.userinterface;
 
+import android.util.Log;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -24,6 +26,7 @@ public abstract class HUD {
     private Stage stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
             false);
     private Dialog waitingDialog;
+    private NetworkController networkController;
 
     public static Skin getPgSkin() {
         return pgSkin;
@@ -53,8 +56,7 @@ public abstract class HUD {
         getStage().addActor(tableHeader);
     }
 
-    void showWaitingWindow(String header)
-    {
+    void showWaitingWindow(String header) {
         waitingDialog = new Dialog(header, getSkin());
         getWaitingDialog().align(Align.center);
         getWaitingDialog().setHeight(getStage().getHeight() / 2);
@@ -80,7 +82,9 @@ public abstract class HUD {
         TextButton hardButton = new TextButton("Сложно", getPGSkin());
         hardButton.addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                String s = WordsBDAdapter.getInstance().getWord(NetworkController.DIFFICULTY_EASY);
+                String s = WordsBDAdapter.getInstance().getWord(NetworkController.DIFFICULTY_HARD);
+                Log.v("keyword", s);
+                getNetworkController().setKeyWord(s);
                 setCanvasScreen();
                 return true;
             }
@@ -89,6 +93,8 @@ public abstract class HUD {
         mediumButton.addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 String s = WordsBDAdapter.getInstance().getWord(NetworkController.DIFFICULTY_MEDIUM);
+                Log.v("keyword", s);
+                getNetworkController().setKeyWord(s);
                 setCanvasScreen();
                 return true;
             }
@@ -96,7 +102,9 @@ public abstract class HUD {
         TextButton easyButton = new TextButton("Легко", getPGSkin());
         easyButton.addListener(new InputListener() {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                String s =  WordsBDAdapter.getInstance().getWord(NetworkController.DIFFICULTY_HARD);
+                String s = WordsBDAdapter.getInstance().getWord(NetworkController.DIFFICULTY_EASY);
+                Log.v("keyword", s);
+                getNetworkController().setKeyWord(s);
                 setCanvasScreen();
                 return true;
             }
@@ -115,8 +123,8 @@ public abstract class HUD {
     }
 
     //-------------CHANGE SCREENS--------------------
-   protected void setCanvasScreen() {
-        getMyGame().setCanvasScreen();
+    protected void setCanvasScreen() {
+        getMyGame().setCanvasScreen(getNetworkController());
     }
 
     protected void setLoginScreen() {
@@ -127,6 +135,10 @@ public abstract class HUD {
         getMyGame().setRegistrationScreen();
     }
 
+    protected void setMainMenuScreen() {
+        getMyGame().setMainMenuScreen();
+    }
+
     //---------------------------------
     protected Dialog getDifficultyDialog() {
         return difficultyDialog;
@@ -134,5 +146,17 @@ public abstract class HUD {
 
     protected void setDifficultyDialog(Dialog difficultyDialog) {
         this.difficultyDialog = difficultyDialog;
+    }
+
+    protected HUD get() {
+        return this;
+    }
+
+    protected NetworkController getNetworkController() {
+        return networkController;
+    }
+
+    protected void setNetworkController(NetworkController networkController) {
+        this.networkController = networkController;
     }
 }

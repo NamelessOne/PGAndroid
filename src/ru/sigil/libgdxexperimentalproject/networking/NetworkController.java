@@ -19,28 +19,33 @@ import ru.sigil.libgdxexperimentalproject.userinterface.HUD;
 public class NetworkController extends Thread {
 
     private byte playerRole;
+    private String keyWord;
     private String opponentLogin;
     private Socket socket;
     private DataOutputStream dout;
     private DataInputStream din;
-    private MessageWriter mw = new MessageWriter();
+    private MessageWriter mw;
     private MessageReader mr = new MessageReader();
     public static final int DIFFICULTY_EASY = 1;
-    public static int DIFFICULTY_MEDIUM = 2;
-    public static int DIFFICULTY_HARD = 3;
+    public static final int DIFFICULTY_MEDIUM = 2;
+    public static final int DIFFICULTY_HARD = 3;
     public static final byte PAINTER = 0;
     public static final byte ANSWERER = 1;
-    private static final byte MESSAGE_SEND_PLAYER_CONNECTED = 0;
-    private static final byte MESSAGE_GET_PLAYER_NOT_IN_MATCH = 1;
-    private static final byte MESSAGE_GET_PLAYERS_ROLE = 9;
-    private static final byte MESSAGE_GET_OPPONENTS_NICKNAME = 10;
-    private static final byte MESSAGE_GET_PICTURE = 3;
+    //----------------------PROTOCOL MESSAGES-----------------------
+    private static final byte TO_CLIENT_MESSAGE_PLAYER_NOT_IN_MATCH = 1;
+    private static final byte TO_CLIENT_MESSAGE_PLAYERS_ROLE = 9;
+    private static final byte TO_CLIENT_MESSAGE_OPPONENTS_NICKNAME = 10;
+    private static final byte TO_CLIENT_MESSAGE_PROVIDE_PICTURE = 11;
+
+    private static final byte TO_SERVER_MESSAGE_PLAYER_CONNECTED = 0;
+    private static final byte TO_SERVER_MESSAGE_PROVIDE_PICTURE = 12;
+    //--------------------------------------------------------------
     private Dialog waitingDialog;
     private Label waitingLabel = new Label("", HUD.getPgSkin());
     private HUD currentHud;
 
     public NetworkController(Dialog dialog, HUD hud) {
-        this.currentHud = hud;
+        this.setCurrentHud(hud);
         this.waitingDialog = dialog;
     }
 
@@ -51,14 +56,6 @@ public class NetworkController extends Thread {
         //Code
     }
 
-    public byte getPlayerRole() {
-        return playerRole;
-    }
-
-    public void setPlayerRole(byte playerRole) {
-        this.playerRole = playerRole;
-    }
-
     public void connectAfterLogin() { //Сначала коннектимся к серверу
         try {
             socket = new Socket("10.0.2.2", 1955);
@@ -66,7 +63,8 @@ public class NetworkController extends Thread {
             dout = new DataOutputStream(socket.getOutputStream());
             din = new DataInputStream(socket.getInputStream());
             //-----------------------------------------------------------------
-            mw.writeByte(MESSAGE_SEND_PLAYER_CONNECTED);
+            mw = new MessageWriter();
+            mw.writeByte(TO_SERVER_MESSAGE_PLAYER_CONNECTED);
             mw.writeString(String.valueOf(Player.getInstance().getId()));//PlayerId
             mw.writeString(Player.getInstance().getLogin());//Login
             mw.writeByte((byte) 0);//ContinueMatch (Что это?!) вроде boolean
@@ -85,14 +83,15 @@ public class NetworkController extends Thread {
 
     private void getRole() {//Получаем роль
         playerRole = mr.readByte(din);
-        Log.v("Role", String.valueOf(playerRole));
-        if(playerRole==ANSWERER)
-        {
-            setWaitingDialogText("Оппонент рисует. Ждем...");
-        }
-        else
-        {
-            currentHud.showDifficultyDialog();
+        switch (playerRole) {
+            case ANSWERER:
+                setWaitingDialogText("Оппонент рисует. Ждем...");
+                break;
+            case PAINTER:
+                currentHud.showDifficultyDialog();
+                break;
+            default:
+                Log.v("Unexpected role:", String.valueOf(playerRole));
         }
         prepareToReceive();
     }
@@ -100,59 +99,84 @@ public class NetworkController extends Thread {
     private void getOpponentLogin() { //Получаем логин оппонента
         opponentLogin = mr.readString(din);
         Log.v("Opponent login", opponentLogin);
-        //setWaitingDialogText("Оппонент" + String.valueOf(opponentLogin));
         prepareToReceive();
     }
 
     private void processMessage(byte messageId) {
-        Log.v("Length", String.valueOf(mr.getOffset()));
-        if (messageId == MESSAGE_GET_PLAYERS_ROLE) {
-            getRole();
+        Log.v("MessageID", String.valueOf(messageId));
+        switch (messageId) {
+            case TO_CLIENT_MESSAGE_PLAYERS_ROLE:
+                getRole();
+                break;
+            case TO_CLIENT_MESSAGE_OPPONENTS_NICKNAME:
+                getOpponentLogin();
+                break;
+            case TO_CLIENT_MESSAGE_PROVIDE_PICTURE:
+                getPicture();//TODO
+                break;
+            case TO_CLIENT_MESSAGE_PLAYER_NOT_IN_MATCH:
+                getNotInMatch();//TODO
+                break;
+            default:
+                Log.v("Unexpected message:", String.valueOf(messageId));
         }
-        if (messageId == MESSAGE_GET_OPPONENTS_NICKNAME) {
-            Log.v("getLogin", "getLogin");
-            getOpponentLogin();//TODO
-        }
-        if (messageId == MESSAGE_GET_PICTURE) {
-            getRole();//TODO
-        }
-        if (messageId == MESSAGE_GET_PLAYER_NOT_IN_MATCH) {
-            getNotInMatch();//TODO
-        }
-        Log.v("Unexpected message:", String.valueOf(messageId));
     }
 
     private void prepareToReceive() {
         mr.setOffset(0);
         int length = mr.readInt(din);
+        Log.v("Message length", String.valueOf(length));
         mr.setOffset(length);
         processMessage(mr.readByte(din));
     }
 
     public void getPicture() {
-        //TODO
+        Log.v("Prepare to get picture", "");
+        byte[] b = mr.readByteArray(din);
+        Log.v("Get picture", String.valueOf(b.length));
+        prepareToReceive();
+        //TODO тут надо отображать картинку (Для теста будем сейвить её на диск)
     }
 
-    public void sendPicture(byte b) {
-        //TODO
+    public void sendPicture(byte b[]) {
+        Log.v("Send picture length", String.valueOf(b.length));
+        mw = new MessageWriter();
+        mw.writeByte(TO_SERVER_MESSAGE_PROVIDE_PICTURE);
+        mw.writeInt(b.length);
+        mw.writeByteArray(b);
+        try {
+            dout.writeInt(mw.data.length);
+            dout.write(mw.data);
+        } catch (Exception e) {}
+
     }
 
     private void getNotInMatch() {
         //TODO
-        Log.v("Not in match", String.valueOf(MESSAGE_GET_PLAYER_NOT_IN_MATCH));
+        Log.v("Not in match", String.valueOf(TO_CLIENT_MESSAGE_PLAYER_NOT_IN_MATCH));
         prepareToReceive();
     }
 
-    private void setWaitingDialogText(String text)
-    {
+    private void setWaitingDialogText(String text) {
         final String newText = new String(text);
         Gdx.app.postRunnable(new Runnable() {
             @Override
             public void run() {
                 waitingLabel.setText(newText);
-                //waitingDialog.text(waitingLabel);
             }
         });
 
+    }
+
+    public void setCurrentHud(HUD currentHud) {
+        this.currentHud = currentHud;
+    }
+
+    public String getKeyWord() {
+        return keyWord;
+    }
+
+    public void setKeyWord(String keyWord) {
+        this.keyWord = keyWord;
     }
 }
