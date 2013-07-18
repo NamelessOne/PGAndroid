@@ -1,13 +1,17 @@
 package ru.sigil.libgdxexperimentalproject.networking;
 
+import android.os.Environment;
 import android.util.Log;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -135,7 +139,19 @@ public class NetworkController extends Thread {
         byte[] b = mr.readByteArray(din);
         Log.v("Get picture", String.valueOf(b.length));
         prepareToReceive();
-        //TODO тут надо отображать картинку (Для теста будем сейвить её на диск)
+        //TODO TEST
+        File sdCard = Environment.getExternalStorageDirectory();
+        File dir = new File(sdCard.getAbsolutePath() + "/pic/");
+        dir.mkdirs();
+        File file = new File(dir, "received");
+        try {
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+            bos.write(b);
+            bos.flush();
+            bos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void sendPicture(byte b[]) {
@@ -147,7 +163,22 @@ public class NetworkController extends Thread {
         try {
             dout.writeInt(mw.data.length);
             dout.write(mw.data);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //TODO TEST
+        File sdCard = Environment.getExternalStorageDirectory();
+        File dir = new File(sdCard.getAbsolutePath() + "/pic/");
+        dir.mkdirs();
+        File file = new File(dir, "send");
+        try {
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+            bos.write(b);
+            bos.flush();
+            bos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 

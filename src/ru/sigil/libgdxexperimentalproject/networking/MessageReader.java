@@ -3,8 +3,10 @@ package ru.sigil.libgdxexperimentalproject.networking;
 import android.util.Log;
 
 import java.io.DataInputStream;
+import java.nio.ByteBuffer;
 
 public class MessageReader {
+    public final int BUFFER_SIZE = 4096;
     private int offset = 0;
     private byte[] data = new byte[0];
 
@@ -47,13 +49,28 @@ public class MessageReader {
 
     public byte[] readByteArray(DataInputStream dis) {
         int length = readInt(dis);
-        byte[] b = new byte[length];
-        try {
+        int iter = length / BUFFER_SIZE;
+        int tail = length % BUFFER_SIZE;
+        ByteBuffer bb = ByteBuffer.allocate(length);
+        //Переписать под использование ByteBuffer
+        byte[] b = new byte[BUFFER_SIZE];
+        byte[] b2 = new byte[tail];
+        Log.v("Byte array length mr", String.valueOf(length));
+        for(int i = 0; i < iter; i++)
+        {
+            try{
             dis.read(b);
-        } catch (Exception e) {
-            e.printStackTrace();
+            bb.put(b);
+            }catch (Exception e){
+                Log.v("FAIL!!!1111", String.valueOf(i));
+                e.printStackTrace();
+            }
         }
-        return b;
+        try{
+        dis.read(b2);
+        bb.put(b2);
+        }catch(Exception e){e.printStackTrace();}
+        return bb.array();
     }
 
     public int getOffset() {

@@ -49,7 +49,8 @@ public class CanvasHUD extends HUD {
                 //TODO хватаем изображение и отсылаем на сервер
                 //false
                 //byte[] b = ScreenUtils.getFrameBufferPixels(false);
-                byte[] b = ScreenUtils.getFrameBufferPixels(0, Renderer.getSCREEN_HEIGHT() / 10, Renderer.getSCREEN_WIDTH(), Renderer.getSCREEN_HEIGHT() * 8 / 10, false);
+                //byte[] b = ScreenUtils.getFrameBufferPixels(0, Renderer.getSCREEN_HEIGHT() / 10, Renderer.getSCREEN_WIDTH(), Renderer.getSCREEN_HEIGHT() * 8 / 10, false);
+                byte[] b = ScreenUtils.getFrameBufferPixels(0, 0, Renderer.getSCREEN_WIDTH() /4, Renderer.getSCREEN_HEIGHT() / 4, false);
                 getNetworkController().sendPicture(b);
                 return true;
             }
