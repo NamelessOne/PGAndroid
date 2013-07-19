@@ -2,7 +2,7 @@ package ru.sigil.libgdxexperimentalproject.networking;
 
 import android.util.Log;
 
-import java.io.DataInputStream;
+import java.io.BufferedInputStream;
 import java.nio.ByteBuffer;
 
 public class MessageReader {
@@ -10,29 +10,32 @@ public class MessageReader {
     private int offset = 0;
     private byte[] data = new byte[0];
 
-    public int readInt(DataInputStream dis) {
+    public int readInt(BufferedInputStream dis) {
         offset += 4;
         int res = 0;
+        byte[] b = new byte[4];
         try {
-            res = dis.readInt();
+            dis.read(b);
+            res = ((0xFF & b[0]) << 24) | ((0xFF & b[1]) << 16) |
+                    ((0xFF & b[2]) << 8) | (0xFF & b[3]);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return res;
     }
 
-    public byte readByte(DataInputStream dis) {
+    public byte readByte(BufferedInputStream dis) {
         offset += 1;
-        byte b = 0;
+        byte[] b  = new byte[1];
         try {
-            b = dis.readByte();
+           dis.read(b);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return b;
+        return b[0];
     }
 
-    public String readString(DataInputStream dis) {
+    public String readString(BufferedInputStream dis) {
         String s = "";
         try {
             int strLength = readInt(dis);
@@ -47,29 +50,29 @@ public class MessageReader {
         return s;
     }
 
-    public byte[] readByteArray(DataInputStream dis) {
+    public byte[] readByteArray(BufferedInputStream dis) {
         int length = readInt(dis);
         int iter = length / BUFFER_SIZE;
         int tail = length % BUFFER_SIZE;
         ByteBuffer bb = ByteBuffer.allocate(length);
         //Переписать под использование ByteBuffer
-        byte[] b = new byte[BUFFER_SIZE];
-        byte[] b2 = new byte[tail];
+        //byte[] b2 = new byte[tail];
         Log.v("Byte array length mr", String.valueOf(length));
-        for(int i = 0; i < iter; i++)
-        {
-            try{
-            dis.read(b);
-            bb.put(b);
-            }catch (Exception e){
+        for (int i = 0; i < length; i++) {
+            try {
+                //byte[] b = new byte[BUFFER_SIZE];
+                bb.put((byte)dis.read());
+            } catch (Exception e) {
                 Log.v("FAIL!!!1111", String.valueOf(i));
                 e.printStackTrace();
             }
         }
-        try{
-        dis.read(b2);
-        bb.put(b2);
-        }catch(Exception e){e.printStackTrace();}
+        try {
+            //dis.read(b2);
+            //bb.put(b2);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return bb.array();
     }
 

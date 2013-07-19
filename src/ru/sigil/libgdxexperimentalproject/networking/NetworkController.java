@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -27,7 +28,7 @@ public class NetworkController extends Thread {
     private String opponentLogin;
     private Socket socket;
     private DataOutputStream dout;
-    private DataInputStream din;
+    private BufferedInputStream din;
     private MessageWriter mw;
     private MessageReader mr = new MessageReader();
     public static final int DIFFICULTY_EASY = 1;
@@ -65,7 +66,7 @@ public class NetworkController extends Thread {
             socket = new Socket("10.0.2.2", 1955);
             socket.setKeepAlive(true);
             dout = new DataOutputStream(socket.getOutputStream());
-            din = new DataInputStream(socket.getInputStream());
+            din = new BufferedInputStream(socket.getInputStream());
             //-----------------------------------------------------------------
             mw = new MessageWriter();
             mw.writeByte(TO_SERVER_MESSAGE_PLAYER_CONNECTED);
@@ -138,20 +139,23 @@ public class NetworkController extends Thread {
         Log.v("Prepare to get picture", "");
         byte[] b = mr.readByteArray(din);
         Log.v("Get picture", String.valueOf(b.length));
-        prepareToReceive();
         //TODO TEST
         File sdCard = Environment.getExternalStorageDirectory();
         File dir = new File(sdCard.getAbsolutePath() + "/pic/");
         dir.mkdirs();
         File file = new File(dir, "received");
         try {
+            Log.v("Get picture process1", String.valueOf(b.length));
             BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
             bos.write(b);
             bos.flush();
             bos.close();
+            Log.v("Get picture process2", String.valueOf(b.length));
         } catch (Exception e) {
             e.printStackTrace();
         }
+        Log.v("Get picture completed", String.valueOf(b.length));
+        prepareToReceive();
     }
 
     public void sendPicture(byte b[]) {
@@ -179,7 +183,6 @@ public class NetworkController extends Thread {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     private void getNotInMatch() {
