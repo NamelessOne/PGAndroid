@@ -8,11 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -136,25 +132,9 @@ public class NetworkController extends Thread {
     }
 
     public void getPicture() {
-        Log.v("Prepare to get picture", "");
+        Log.v("Send picture", "");
         byte[] b = mr.readByteArray(din);
-        Log.v("Get picture", String.valueOf(b.length));
-        //TODO TEST
-        File sdCard = Environment.getExternalStorageDirectory();
-        File dir = new File(sdCard.getAbsolutePath() + "/pic/");
-        dir.mkdirs();
-        File file = new File(dir, "received");
-        try {
-            Log.v("Get picture process1", String.valueOf(b.length));
-            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-            bos.write(b);
-            bos.flush();
-            bos.close();
-            Log.v("Get picture process2", String.valueOf(b.length));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        Log.v("Get picture completed", String.valueOf(b.length));
+        //TODO байты для отображения
         prepareToReceive();
     }
 
@@ -167,19 +147,6 @@ public class NetworkController extends Thread {
         try {
             dout.writeInt(mw.data.length);
             dout.write(mw.data);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        //TODO TEST
-        File sdCard = Environment.getExternalStorageDirectory();
-        File dir = new File(sdCard.getAbsolutePath() + "/pic/");
-        dir.mkdirs();
-        File file = new File(dir, "send");
-        try {
-            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-            bos.write(b);
-            bos.flush();
-            bos.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
