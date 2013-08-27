@@ -123,7 +123,7 @@ public abstract class HUD {
     }
 
     //-------------CHANGE SCREENS--------------------
-    protected void setCanvasScreen() {
+    public void setCanvasScreen() {
         getMyGame().setCanvasScreen(getNetworkController());
     }
 
@@ -137,6 +137,10 @@ public abstract class HUD {
 
     protected void setMainMenuScreen() {
         getMyGame().setMainMenuScreen();
+    }
+
+    public void setReceivedPictureScreen() {
+        getMyGame().setReceivedPictureScreen(getNetworkController());
     }
 
     //---------------------------------

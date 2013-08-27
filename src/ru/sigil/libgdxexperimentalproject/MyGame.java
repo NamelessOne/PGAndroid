@@ -9,6 +9,7 @@ import ru.sigil.libgdxexperimentalproject.networking.NetworkController;
 import ru.sigil.libgdxexperimentalproject.screens.CanvasScreen;
 import ru.sigil.libgdxexperimentalproject.screens.LoginScreen;
 import ru.sigil.libgdxexperimentalproject.screens.MainMenuScreen;
+import ru.sigil.libgdxexperimentalproject.screens.ReceivedPictureScreen;
 import ru.sigil.libgdxexperimentalproject.screens.RegistrationScreen;
 
 public class MyGame extends Game {
@@ -18,6 +19,7 @@ public class MyGame extends Game {
     private MainMenuScreen mainMenuScreen;
     private LoginScreen loginScreen;
     private RegistrationScreen registrationScreen;
+    private ReceivedPictureScreen receivedPictureScreen;
     private Handler showAdsHandler;
     private final int SHOW_ADS = 1;
     private final int HIDE_ADS = 0;
@@ -54,6 +56,12 @@ public class MyGame extends Game {
     public void setMainMenuScreen() {
         getShowAdsHandler().sendEmptyMessage(SHOW_ADS);
         setScreen(mainMenuScreen);
+    }
+
+    public void setReceivedPictureScreen(NetworkController networkController) {
+        receivedPictureScreen = new ReceivedPictureScreen(this, networkController);
+        getShowAdsHandler().sendEmptyMessage(SHOW_ADS);
+        setScreen(receivedPictureScreen);
     }
 
     public Handler getShowAdsHandler() {

@@ -1,18 +1,20 @@
 package ru.sigil.libgdxexperimentalproject.networking;
 
-import android.os.Environment;
 import android.util.Log;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
 import java.io.BufferedInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import ru.sigil.libgdxexperimentalproject.PNG;
 import ru.sigil.libgdxexperimentalproject.model.Player;
 import ru.sigil.libgdxexperimentalproject.userinterface.HUD;
 
@@ -44,6 +46,7 @@ public class NetworkController extends Thread {
     private Dialog waitingDialog;
     private Label waitingLabel = new Label("", HUD.getPgSkin());
     private HUD currentHud;
+    private byte[] recvdPicture;
 
     public NetworkController(Dialog dialog, HUD hud) {
         this.setCurrentHud(hud);
@@ -59,7 +62,7 @@ public class NetworkController extends Thread {
 
     public void connectAfterLogin() { //Сначала коннектимся к серверу
         try {
-            socket = new Socket("10.0.2.2", 1955);
+            socket = new Socket("192.168.3.103", 1955);
             socket.setKeepAlive(true);
             dout = new DataOutputStream(socket.getOutputStream());
             din = new BufferedInputStream(socket.getInputStream());
@@ -133,8 +136,26 @@ public class NetworkController extends Thread {
 
     public void getPicture() {
         Log.v("Send picture", "");
-        byte[] b = mr.readByteArray(din);
+        recvdPicture = mr.readByteArray(din);
+        //-------------------------------------
+        FileHandle image = Gdx.files.external("directory/rcvd.png");
+        OutputStream stream = image.write(false);
+        try {
+            stream.write(recvdPicture);
+            stream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //-------------------------------------
         //TODO байты для отображения
+        //currentHud.setCanvasScreen();
+        Gdx.app.postRunnable(new Runnable() {
+            @Override
+            public void run() {
+                // process the result, e.g. add it to an Array<Result> field of the ApplicationListener.
+                currentHud.setReceivedPictureScreen();
+            }
+        });
         prepareToReceive();
     }
 
@@ -179,5 +200,13 @@ public class NetworkController extends Thread {
 
     public void setKeyWord(String keyWord) {
         this.keyWord = keyWord;
+    }
+
+    public byte[] getRecvdPicture() {
+        return recvdPicture;
+    }
+
+    public void setRecvdPicture(byte[] recvdPicture) {
+        this.recvdPicture = recvdPicture;
     }
 }
