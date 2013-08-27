@@ -56,16 +56,11 @@ public class CanvasHUD extends HUD {
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 //TODO хватаем изображение и отсылаем на сервер
                 //false
-                //byte[] b = ScreenUtils.getFrameBufferPixels(0, Renderer.getSCREEN_HEIGHT() / 10, Renderer.getSCREEN_WIDTH(), Renderer.getSCREEN_HEIGHT() * 8 / 10, false);
                 //------------------------------------------
                 Pixmap pixmap = getScreenshot(0, Renderer.getSCREEN_HEIGHT() / 10, Renderer.getSCREEN_WIDTH(), Renderer.getSCREEN_HEIGHT() * 8 / 10, true);
-                FileHandle image = Gdx.files.external("directory/filename.png");
-                OutputStream stream = image.write(false);
                 try {
                     byte[] bytes = PNG.toPNG(pixmap);
                     pixmap.dispose();
-                    stream.write(bytes);
-                    stream.close();
                     getNetworkController().sendPicture(bytes);
                 } catch (Exception e) {
                     e.printStackTrace();

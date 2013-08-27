@@ -56,7 +56,10 @@ public class ReceivedPictureRenderer extends Renderer{
         batcher.begin();
         if(rcvdTex!=null)
         {
-            batcher.draw(rcvdTex, 0, getSCREEN_HEIGHT() / 10);
+            //TODO сделать масштабирование
+            //batcher.draw(rcvdTex, 0, getSCREEN_HEIGHT() / 10);
+            batcher.draw(rcvdTex, 0, getSCREEN_HEIGHT()/10, getSCREEN_WIDTH(), getSCREEN_HEIGHT() - 2 *getSCREEN_HEIGHT()/10, 0, 0, rcvdTex.getWidth(), rcvdTex.getHeight(), false, false);
+            //batcher.draw(rcvdTex, 0, getSCREEN_HEIGHT()/10, 100, 100);
         }
         batcher.end();
         receivedPictureHUD.getStage().act(Math.min(Gdx.graphics.getDeltaTime(), 1 / 30f));
